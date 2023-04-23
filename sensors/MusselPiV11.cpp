@@ -19,8 +19,8 @@ void LSM_Acc_Read(uint8_t channel, int16_t *acc_all);
 void LSM_Acc_Reg_Write (uint8_t reg_address, uint8_t data);
 void LSM_Init(uint8_t channel);
 float calculateTemp(uint8_t ch_bot);
-void calculateAverageAcc(uint8_t ch_bot, uint8_t ch_top, int16_t *ACC_bot, int16_t *ACC_top);
-bool I2Ccheck(uint8_t ch_bot, uint8_t ch_top, int16_t *ACC_bot, int16_t *ACC_top);
+void calculateAverageAcc(uint8_t ch,int16_t *acc);
+bool I2Ccheck(uint8_t ch, int16_t *acc);
 
 uint32_t devID = 101;
 //I2C Addresses
@@ -43,26 +43,30 @@ uint8_t i;
 uint8_t q;
 int sampleNum = 0;
 
-//Pair1
-int16_t ACC_Pb1[3], ACC_Pt1[3];
-uint8_t ch_Pb1 = 6;
-uint8_t ch_Pt1 = 7;
-bool pair1Failed = false;
-//Pair2
-int16_t ACC_Pb2[3], ACC_Pt2[3];
-uint8_t ch_Pb2 = 4;
-uint8_t ch_Pt2 = 5;
-bool pair2Failed = false;
-//Pair3
-int16_t ACC_Pb3[3], ACC_Pt3[3];
-uint8_t ch_Pb3 = 2;
-uint8_t ch_Pt3 = 3;
-bool pair3Failed = false;
-//Pair4
-int16_t ACC_Pb4[3], ACC_Pt4[3];
-uint8_t ch_Pb4 = 0;
-uint8_t ch_Pt4 = 1;
-bool pair4Failed = false;
+//Sensor1
+int16_t ACC1[3];
+uint8_t ch1 =7;
+//Sensor2
+int16_t ACC2[3];
+uint8_t ch2 =6;
+//Sensor3
+int16_t ACC3[3];
+uint8_t ch3 =5;
+//Sensor4
+int16_t ACC4[3];
+uint8_t ch4 =4;
+//Sensor5
+int16_t ACC5[3];
+uint8_t ch5 =3;
+//Sensor6
+int16_t ACC6[3];
+uint8_t ch6 =2;
+//Sensor7
+int16_t ACC7[3];
+uint8_t ch7 =1;
+//Sensor8
+int16_t ACC8[3];
+uint8_t ch8 =0;
 
 int main(void)
 {
@@ -72,85 +76,117 @@ int main(void)
 	    LSM_Init(i); //Initialize all of the channels (0-7)
 	  }
 	  //Check each pair to see which ones are connected
-	  pair1Failed = I2Ccheck(ch_Pb1, ch_Pt1, ACC_Pb1, ACC_Pt1);
-	  pair2Failed = I2Ccheck(ch_Pb2, ch_Pt2, ACC_Pb2, ACC_Pt2);
-	  pair3Failed = I2Ccheck(ch_Pb3, ch_Pt3, ACC_Pb3, ACC_Pt3);
-	  pair4Failed = I2Ccheck(ch_Pb4, ch_Pt4, ACC_Pb4, ACC_Pt4);
+	  acc1Present = I2Ccheck(ch1, ACC1);
+	  acc2Present = I2Ccheck(ch2, ACC2);
+	  acc3Present = I2Ccheck(ch3, ACC3);
+	  acc4Present = I2Ccheck(ch4, ACC4);
+	  acc5Present = I2Ccheck(ch5, ACC5);
+	  acc6Present = I2Ccheck(ch6, ACC6);
+	  acc7Present = I2Ccheck(ch7, ACC7);
+	  acc8Present = I2Ccheck(ch8, ACC8);
 
 	  while(1)
 	  {
 		  		string dataString = ""; // Create a string to write to Serial and the SD card
 		        string statusString = ""; // Create a string to keep track of what was recorded
 		        statusString += to_string(devID) + ",";
-					if (!pair1Failed) //Measure angle and magnetic intensity then add to string
+					if (acc1Present) //Measure angle and magnetic intensity then add to string
 					  {
-					    calculateAverageAcc(ch_Pb1, ch_Pt1, ACC_Pb1, ACC_Pt1);
+					    calculateAverageAcc(ch1, ACC1);
 
 					    for (int i = 0; i < 3; i++) // Add the XYZ data to the string
 					    {
-					      dataString += to_string(ACC_Pb1[i]);
-					      dataString += ",";
-					    }
-					    for (int i = 0; i < 3; i++)
-					    {
-					      dataString += to_string(ACC_Pt1[i]);
+					      dataString += to_string(ACC1[i]);
 					      dataString += ",";
 					    }
 					    statusString += "1A";
 
 					  }
 
-					  if (!pair2Failed)
-					  {
-					    calculateAverageAcc(ch_Pb2, ch_Pt2, ACC_Pb2, ACC_Pt2);
+					  if (acc2Present)
+					   {
+					    calculateAverageAcc(ch2, ACC2);
 
 					    for (int i = 0; i < 3; i++) // Add the XYZ data to the string
 					    {
-					      dataString += to_string(ACC_Pb2[i]);
-					      dataString += ",";
-					    }
-					    for (int i = 0; i < 3; i++)
-					    {
-					      dataString += to_string(ACC_Pt2[i]);
+					      dataString += to_string(ACC2[i]);
 					      dataString += ",";
 					    }
 					    statusString += "2A";
 
 					  }
 
-					  if (!pair3Failed)
-					  {
-					    calculateAverageAcc(ch_Pb3, ch_Pt3, ACC_Pb3, ACC_Pt3);
+					  if (acc3Present)
+					   {
+					    calculateAverageAcc(ch3, ACC3);
 
 					    for (int i = 0; i < 3; i++) // Add the XYZ data to the string
 					    {
-					      dataString += to_string(ACC_Pb3[i]);
-					      dataString += ",";
-					    }
-					    for (int i = 0; i < 3; i++)
-					    {
-					      dataString += to_string(ACC_Pt3[i]);
+					      dataString += to_string(ACC3[i]);
 					      dataString += ",";
 					    }
 					    statusString += "3A";
 
 					  }
 
-					  if (!pair4Failed)
-					  {
-					    calculateAverageAcc(ch_Pb4, ch_Pt4, ACC_Pb4, ACC_Pt4);
+					  if (acc4Present)
+					   {
+					    calculateAverageAcc(ch4, ACC4);
 
 					    for (int i = 0; i < 3; i++) // Add the XYZ data to the string
 					    {
-					      dataString += to_string(ACC_Pb4[i]);
-					      dataString += ",";
-					    }
-					    for (int i = 0; i < 3; i++)
-					    {
-					      dataString += to_string(ACC_Pt4[i]);
+					      dataString += to_string(ACC4[i]);
 					      dataString += ",";
 					    }
 					    statusString += "4A";
+
+					  }
+					  if (acc5Present)
+					   {
+					    calculateAverageAcc(ch5, ACC5);
+
+					    for (int i = 0; i < 3; i++) // Add the XYZ data to the string
+					    {
+					      dataString += to_string(ACC5[i]);
+					      dataString += ",";
+					    }
+					    statusString += "5A";
+
+					  }
+					  if (acc6Present)
+					   {
+					    calculateAverageAcc(ch6, ACC6);
+
+					    for (int i = 0; i < 3; i++) // Add the XYZ data to the string
+					    {
+					      dataString += to_string(ACC6[i]);
+					      dataString += ",";
+					    }
+					    statusString += "6A";
+
+					  }
+					  if (acc7Present)
+					   {
+					    calculateAverageAcc(ch7, ACC7);
+
+					    for (int i = 0; i < 3; i++) // Add the XYZ data to the string
+					    {
+					      dataString += to_string(ACC7[i]);
+					      dataString += ",";
+					    }
+					    statusString += "7A";
+
+					  }
+					  if (acc8Present)
+					   {
+					    calculateAverageAcc(ch8, ACC8);
+
+					    for (int i = 0; i < 3; i++) // Add the XYZ data to the string
+					    {
+					      dataString += to_string(ACC8[i]);
+					      dataString += ",";
+					    }
+					    statusString += "8A";
 
 					  }
 
@@ -233,55 +269,36 @@ float calculateTemp(uint8_t ch_bot)
   return tempCalc;
 }
 
-void calculateAverageAcc(uint8_t ch_bot, uint8_t ch_top, int16_t *ACC_bot, int16_t *ACC_top)
+void calculateAverageAcc(uint8_t ch, int16_t *acc)
 {
-  int16_t ACC_sumb[3], ACC_sumt[3];
-  LSM_Init(ch_bot);
-  LSM_Init(ch_top);
+  int16_t ACC_sum[3]
+  LSM_Init(ch);
   HAL_Delay(100);
   for (i = 0; i < 3; i++) { //Initialize the variables
-    ACC_sumb[i] = 0;
-    ACC_sumt[i] = 0;
+    ACC_sum[i] = 0;
   }
   for (q = 0; q < 16; q++) {
-    LSM_Acc_Read(ch_bot, ACC_bot); //Get the XYZ values for both sensors
-    LSM_Acc_Read(ch_top, ACC_top);
+    LSM_Acc_Read(ch, acc); //Get the XYZ values for both sensors
     for (i = 0; i < 3; i++) {
-      ACC_sumb[i] += (ACC_bot[i]/16); // Shift the data by 4 bits to account for left justification
-      ACC_sumt[i] += (ACC_top[i]/16);
+      ACC_sum[i] += (acc[i]/16); // Shift the data by 4 bits to account for left justification
     }
     usleep(1100); // Slightly longer than 10ms for 100Hz to make sure we have a new sample.
   }
   for (i = 0; i < 3; i++) {
-      ACC_bot[i] = (int)(ACC_sumb[i]/16); // Save the average of the data
-      ACC_top[i] = (int)(ACC_sumt[i]/16);
+      acc[i] = (int)(ACC_sum[i]/16); // Save the average of the data
   }
-  PCA_Reg_Write(0x09, 0x08 | ch_bot);
-  LSM_Acc_Reg_Write(0x20, 0x00);  //Shut down sensor
-  PCA_Reg_Write(0x09, 0x08 | ch_top);
+  PCA_Reg_Write(0x09, 0x08 | ch);
   LSM_Acc_Reg_Write(0x20, 0x00);  //Shut down sensor
 
 }
 
-bool I2Ccheck(uint8_t ch_bot, uint8_t ch_top, int16_t *ACC_bot, int16_t *ACC_top)
+bool I2Ccheck(uint8_t ch, int16_t *acc)
 {
   //Check the Who Am I register to see if the pair is there.
- PCA_Reg_Write(0x09, 0x08 | ch_bot); // Select the correct channel
- int16_t botCheck = LSM_Acc_Reg_Read(0x0F) & 0xff; // Check to see if the response is correct
+ PCA_Reg_Write(0x09, 0x08 | ch); // Select the correct channel
+ int16_t check = LSM_Acc_Reg_Read(0x0F) & 0xff; // Check to see if the response is correct
  //cout << hex << botCheck << endl;
  //botCheck = botCheck & 0xff;
- bool botPresent = (botCheck == 0x33) ? true : false;
- PCA_Reg_Write(0x09, 0x08 | ch_top); // Select the correct channel
- int16_t topCheck = LSM_Acc_Reg_Read(0x0F) & 0xff;
- bool topPresent = (topCheck == 0x33) ? true : false;
- //cout << hex << botCheck << "," << topCheck << endl;
-
-  if (botPresent && topPresent)
-  {
-    return false;
-  }
-  else
-  {
-    return true;
-  }
+ bool present = (check == 0x33) ? true : false;
+ return present;
 }
