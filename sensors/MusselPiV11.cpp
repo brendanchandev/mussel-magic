@@ -87,13 +87,18 @@ int main(void)
 
 	  while(1)
 	  {
+		  		bool tempSampled = false;
 		  		string dataString = ""; // Create a string to write to Serial and the SD card
 		        string statusString = ""; // Create a string to keep track of what was recorded
 		        statusString += to_string(devID) + ",";
 					if (acc1Present) //Measure angle and magnetic intensity then add to string
 					  {
+						if(!tempSampled) {
+							tempData = calculateTemp(ch1);
+							dataString += to_string(tempData);
+							tempSampled = true;
+					  	}
 					    calculateAverageAcc(ch1, ACC1);
-
 					    for (int i = 0; i < 3; i++) // Add the XYZ data to the string
 					    {
 					      dataString += to_string(ACC1[i]);
@@ -105,6 +110,11 @@ int main(void)
 
 					  if (acc2Present)
 					   {
+						   if(!tempSampled) {
+							tempData = calculateTemp(ch2);
+							dataString += to_string(tempData);
+							tempSampled = true;
+					  	}
 					    calculateAverageAcc(ch2, ACC2);
 
 					    for (int i = 0; i < 3; i++) // Add the XYZ data to the string
@@ -118,6 +128,11 @@ int main(void)
 
 					  if (acc3Present)
 					   {
+						   if(!tempSampled) {
+							tempData = calculateTemp(ch3);
+							dataString += to_string(tempData);
+							tempSampled = true;
+					  	}
 					    calculateAverageAcc(ch3, ACC3);
 
 					    for (int i = 0; i < 3; i++) // Add the XYZ data to the string
@@ -131,6 +146,11 @@ int main(void)
 
 					  if (acc4Present)
 					   {
+						   if(!tempSampled) {
+							tempData = calculateTemp(ch4);
+							dataString += to_string(tempData);
+							tempSampled = true;
+					  	}
 					    calculateAverageAcc(ch4, ACC4);
 
 					    for (int i = 0; i < 3; i++) // Add the XYZ data to the string
@@ -143,6 +163,11 @@ int main(void)
 					  }
 					  if (acc5Present)
 					   {
+						   if(!tempSampled) {
+							tempData = calculateTemp(ch5);
+							dataString += to_string(tempData);
+							tempSampled = true;
+					  	}
 					    calculateAverageAcc(ch5, ACC5);
 
 					    for (int i = 0; i < 3; i++) // Add the XYZ data to the string
@@ -155,6 +180,11 @@ int main(void)
 					  }
 					  if (acc6Present)
 					   {
+						   if(!tempSampled) {
+							tempData = calculateTemp(ch6);
+							dataString += to_string(tempData);
+							tempSampled = true;
+					  	}
 					    calculateAverageAcc(ch6, ACC6);
 
 					    for (int i = 0; i < 3; i++) // Add the XYZ data to the string
@@ -167,6 +197,11 @@ int main(void)
 					  }
 					  if (acc7Present)
 					   {
+						if(!tempSampled) {
+							tempData = calculateTemp(ch7);
+							dataString += to_string(tempData);
+							tempSampled = true;
+					  	}
 					    calculateAverageAcc(ch7, ACC7);
 
 					    for (int i = 0; i < 3; i++) // Add the XYZ data to the string
@@ -179,6 +214,11 @@ int main(void)
 					  }
 					  if (acc8Present)
 					   {
+						   if(!tempSampled) {
+							tempData = calculateTemp(ch8);
+							dataString += to_string(tempData);
+							tempSampled = true;
+					  	}
 					    calculateAverageAcc(ch8, ACC8);
 
 					    for (int i = 0; i < 3; i++) // Add the XYZ data to the string
@@ -189,7 +229,6 @@ int main(void)
 					    statusString += "8A";
 
 					  }
-
 					  dataString = statusString + "," + dataString; //Combine the status info with the data
 					  cout << dataString << endl; // Print the data out (or replace with method to save or graph the data)
 					  sleep(10);
