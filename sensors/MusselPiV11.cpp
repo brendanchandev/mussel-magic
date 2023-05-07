@@ -4,7 +4,7 @@
 
 #include "math.h"
 #include <wiringPiI2C.h>
-#include "../uugear/src/UUGear.h"
+#include "../uugear/UUGear.h"
 #include <iostream>
 #include <string.h>
 #include <pthread.h>
@@ -115,7 +115,7 @@ int main(void)
 	int pin = 3; // analog input pin 3
 	int i, value;
 	float voltage;
-
+	float tempData;
 	while (1)
 	{
 
@@ -350,7 +350,8 @@ float calculateTemp(uint8_t ch_bot)
 
 void calculateAverageAcc(uint8_t ch, int16_t *acc)
 {
-	int16_t ACC_sum[3] LSM_Init(ch);
+	int16_t ACC_sum[3];
+	LSM_Init(ch);
 	HAL_Delay(100);
 	for (i = 0; i < 3; i++)
 	{ //Initialize the variables
