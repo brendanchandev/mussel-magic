@@ -78,15 +78,6 @@ uint8_t ch7 = 1;
 int16_t ACC8[3];
 uint8_t ch8 = 0;
 
-struct UUGearDevice
-{
-	char id[UUGEAR_ID_MAX_LENGTH];
-	int clientId;
-	int fd;
-	mqd_t in;
-	mqd_t out;
-};
-
 int main(void)
 {
 	PCAwiring = wiringPiI2CSetup(PCA_ADDR); //Open the Linux port
@@ -95,19 +86,19 @@ int main(void)
 		LSM_Init(i); //Initialize all of the channels (0-7)
 	}
 	//Check each pair to see which ones are connected
-	acc1Present = I2Ccheck(ch1, ACC1);
-	acc2Present = I2Ccheck(ch2, ACC2);
-	acc3Present = I2Ccheck(ch3, ACC3);
-	acc4Present = I2Ccheck(ch4, ACC4);
-	acc5Present = I2Ccheck(ch5, ACC5);
-	acc6Present = I2Ccheck(ch6, ACC6);
-	acc7Present = I2Ccheck(ch7, ACC7);
-	acc8Present = I2Ccheck(ch8, ACC8);
+	bool acc1Present = I2Ccheck(ch1, ACC1);
+	bool acc2Present = I2Ccheck(ch2, ACC2);
+	bool acc3Present = I2Ccheck(ch3, ACC3);
+	bool acc4Present = I2Ccheck(ch4, ACC4);
+	bool acc5Present = I2Ccheck(ch5, ACC5);
+	bool acc6Present = I2Ccheck(ch6, ACC6);
+	bool acc7Present = I2Ccheck(ch7, ACC7);
+	bool acc8Present = I2Ccheck(ch8, ACC8);
 
 	setupUUGear();
 	setShowLogs(1);
 	UUGearDevice dev = attachUUGearDevice("UUGEAR-ID");
-	if dev.fd == -1
+	if (dev.fd == -1)
 		{
 			printf("Arudino not setup!");
 			fflush(stdout);
@@ -123,7 +114,7 @@ int main(void)
 		string dataString = "";	  // Create a string to write to Serial and the SD card
 		string statusString = ""; // Create a string to keep track of what was recorded
 		statusString += to_string(devID) + ",";
-		if dev.fd != -1 
+		if (dev.fd != -1 )
 		{
 			value = analogRead(&dev, pin);
 			voltage = (float)(value * 5) / 1024;
@@ -352,7 +343,7 @@ void calculateAverageAcc(uint8_t ch, int16_t *acc)
 {
 	int16_t ACC_sum[3];
 	LSM_Init(ch);
-	HAL_Delay(100);
+	//HAL_Delay(100);
 	for (i = 0; i < 3; i++)
 	{ //Initialize the variables
 		ACC_sum[i] = 0;
