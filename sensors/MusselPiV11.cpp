@@ -4,7 +4,6 @@
 
 #include "math.h"
 #include <wiringPiI2C.h>
-#include "../uugear/UUGear.h"
 #include <iostream>
 #include <string.h>
 #include <pthread.h>
@@ -13,13 +12,15 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <mqueue.h>
+#include <SerialStream.h>
+#include <fstream>
 #include <sys/wait.h>
 #include <errno.h>
 #include <time.h>
 #include <stdarg.h>
 
 using namespace std;
+using namespace LibSerial;
 
 int I2C_write(uint8_t slave_address, uint8_t reg_address, uint8_t configData, int byteCount);
 int I2C_read(uint8_t slave_address, uint8_t reg_address);
@@ -95,17 +96,15 @@ int main(void)
 	bool acc7Present = I2Ccheck(ch7, ACC7);
 	bool acc8Present = I2Ccheck(ch8, ACC8);
 
-	setupUUGear();
-	setShowLogs(1);
-	UUGearDevice dev = attachUUGearDevice("UUGEAR-ID");
-	if (dev.fd == -1)
-		{
-			printf("Arudino not setup!");
-			fflush(stdout);
-		}
-	int pin = 3; // analog input pin 3
-	int i, value;
-	float voltage;
+	SerialStream arduino("/dev/ttyACM0", ios_base::in);
+    arduino.SetBaudRate(SerialStreamBuf::BAUD_9600);
+    arduino.SetCharSize(SerialStreamBuf::CHAR_SIZE_8);
+    arduino.SetNumOfStopBits(1);
+    arduino.SetParity(SerialStreamBuf::PARITY_NONE);
+    arduino.SetFlowControl(SerialStreamBuf::FLOW_CONTROL_NONE);
+
+    ofstream outputFile("voltage.csv", ios_base::app);
+    string line;
 	float tempData;
 	while (1)
 	{
@@ -114,14 +113,12 @@ int main(void)
 		string dataString = "";	  // Create a string to write to Serial and the SD card
 		string statusString = ""; // Create a string to keep track of what was recorded
 		statusString += to_string(devID) + ",";
-		if (dev.fd != -1 )
-		{
-			value = analogRead(&dev, pin);
-			voltage = (float)(value * 5) / 1024;
-			// convert this to salinity value?
-			dataString += sprintf("%.2fV,", voltage);
-			statusString += "Salinity,"
-		}
+		if (arduino.IsDataAvailable())
+        {
+            getline(arduino, line);
+            outputFile << line << endl;
+            dataString += line;
+        }
 		if (acc1Present) //Measure angle and magnetic intensity then add to string
 		{
 			if (!tempSampled)
