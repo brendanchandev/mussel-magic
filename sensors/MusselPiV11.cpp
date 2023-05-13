@@ -2,22 +2,13 @@
 //Tested with Raspberry PI OS 3.6.
 //Written by James Reynolds (05/2022) Version 1.1
 
-#include "math.h"
 #include <wiringPiI2C.h>
 #include <iostream>
 #include <string.h>
-#include <pthread.h>
 #include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <SerialStream.h>
 #include <fstream>
-#include <sys/wait.h>
-#include <errno.h>
-#include <time.h>
-#include <stdarg.h>
+#include <string>
 
 using namespace std;
 using namespace LibSerial;
@@ -372,6 +363,3 @@ bool I2Ccheck(uint8_t ch, int16_t *acc)
 	bool present = (check == 0x33) ? true : false;
 	return present;
 }
-
-// UUgear code
-
