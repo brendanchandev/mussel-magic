@@ -38,9 +38,6 @@ uint8_t TEMP_addr[2] = {0x0C, 0x0D};
 //Moving Average Parameters
 const int filt_len = 25;
 float mov_avg = 0.0;
-double sum_prod;
-double sq_bot;
-double sq_top;
 uint8_t i;
 uint8_t q;
 int sampleNum = 0;
@@ -96,7 +93,7 @@ int main(void)
 	ofstream accel7F("../data/accelerometer7.csv");
 	ofstream accel8F("../data/accelerometer8.csv");
 	ofstream tempF("../data/temperature.csv");
-	ofstream salinityF("../data/salinity.csv")
+	ofstream salinityF("../data/salinity.csv");
 
 	SerialStream arduino("/dev/ttyACM0", ios_base::in);
     arduino.SetBaudRate(SerialStreamBuf::BAUD_9600);
@@ -128,13 +125,7 @@ int main(void)
 				tempSampled = true;
 			}
 			calculateAverageAcc(ch1, ACC1);
-			accel1F << getCurrentTimestampMillisString() << ",";
-			for (int i = 0; i < 3; i++) // Add the XYZ data to the string
-			{
-				accel1F << "," << to_string(ACC1[i]); 
-			}
-			accel1F << endl;
-			
+            processAccelerometerData(ch1, ACC1, accel1F);
 		}
 
 		if (acc2Present)
@@ -146,12 +137,7 @@ int main(void)
 				tempSampled = true;
 			}
 			calculateAverageAcc(ch2, ACC2);
-			accel2F << getCurrentTimestampMillisString() << ",";
-			for (int i = 0; i < 3; i++) // Add the XYZ data to the string
-			{
-				accel2F << "," << to_string(ACC2[i]); 
-			}
-			accel2F << endl;
+            processAccelerometerData(ch2, ACC2, accel2F);
 		}
 
 		if (acc3Present)
@@ -163,13 +149,7 @@ int main(void)
 				tempSampled = true;
 			}
 			calculateAverageAcc(ch3, ACC3);
-
-			accel3F << getCurrentTimestampMillisString() << ",";
-			for (int i = 0; i < 3; i++) // Add the XYZ data to the string
-			{
-				accel3F << "," << to_string(ACC3[i]); 
-			}
-			accel3F << endl;
+            processAccelerometerData(ch3, ACC3, accel3F);
 		}
 
 		if (acc4Present)
@@ -181,13 +161,7 @@ int main(void)
 				tempSampled = true;
 			}
 			calculateAverageAcc(ch4, ACC4);
-
-			accel4F << getCurrentTimestampMillisString() << ",";
-			for (int i = 0; i < 3; i++) // Add the XYZ data to the string
-			{
-				accel4F << "," << to_string(ACC4[i]); 
-			}
-			accel4F << endl;
+            processAccelerometerData(ch4, ACC4, accel4F);
 		}
 		if (acc5Present)
 		{
@@ -198,13 +172,7 @@ int main(void)
 				tempSampled = true;
 			}
 			calculateAverageAcc(ch5, ACC5);
-
-			accel5F << getCurrentTimestampMillisString() << ",";
-			for (int i = 0; i < 3; i++) // Add the XYZ data to the string
-			{
-				accel5F << "," << to_string(ACC2[i]); 
-			}
-			accel5F << endl;
+            processAccelerometerData(ch5, ACC5, accel5F);
 		}
 		if (acc6Present)
 		{
@@ -215,13 +183,7 @@ int main(void)
 				tempSampled = true;
 			}
 			calculateAverageAcc(ch6, ACC6);
-
-			accel6F << getCurrentTimestampMillisString() << ",";
-			for (int i = 0; i < 3; i++) // Add the XYZ data to the string
-			{
-				accel6F << "," << to_string(ACC6[i]); 
-			}
-			accel6F << endl;
+            processAccelerometerData(ch6, ACC6, accel6F);
 		}
 		if (acc7Present)
 		{
@@ -232,13 +194,7 @@ int main(void)
 				tempSampled = true;
 			}
 			calculateAverageAcc(ch7, ACC7);
-
-			accel7F << getCurrentTimestampMillisString() << ",";
-			for (int i = 0; i < 3; i++) // Add the XYZ data to the string
-			{
-				accel7F << "," << to_string(ACC7[i]); 
-			}
-			accel7F << endl;
+            processAccelerometerData(ch7, ACC7, accel7F);
 		}
 		if (acc8Present)
 		{
@@ -249,16 +205,8 @@ int main(void)
 				tempSampled = true;
 			}
 			calculateAverageAcc(ch8, ACC8);
-
-			accel8F << getCurrentTimestampMillisString() << ",";
-			for (int i = 0; i < 3; i++) // Add the XYZ data to the string
-			{
-				accel8F << "," << to_string(ACC8[i]); 
-			}
-			accel8F << endl;
+            processAccelerometerData(ch8, ACC8, accel8F);
 		}
-		dataString = statusString + "," + dataString; //Combine the status info with the data
-		cout << dataString << endl;					  // Print the data out (or replace with method to save or graph the data)
 		sleep(10);
 	}
 	accel1F.close();
@@ -387,4 +335,18 @@ string getCurrentTimestampMillisString()
     auto duration = now.time_since_epoch();
     auto millis = chrono::duration_cast<chrono::milliseconds>(duration).count();
     return to_string(millis);
+}
+
+void printRowToCSV(ofstream& file, long long timestamp, int16_t* acc)
+{
+    file << timestamp << "," << acc[0] << "," << acc[1] << "," << acc[2] << endl;
+}
+
+void processAccelerometerData(int ch, int16_t* acc, ofstream& file)
+{
+    file << getCurrentTimestampMillisString();
+    for (int i = 0; i < 3; i++) {
+        file << "," << acc[i];
+    }
+    file << endl;
 }
