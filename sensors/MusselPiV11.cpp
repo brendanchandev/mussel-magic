@@ -87,6 +87,17 @@ int main(void)
 	bool acc7Present = I2Ccheck(ch7, ACC7);
 	bool acc8Present = I2Ccheck(ch8, ACC8);
 
+	ofstream accel1F("../data/accelerometer1.csv");
+	ofstream accel2F("../data/accelerometer2.csv");
+	ofstream accel3F("../data/accelerometer3.csv");
+	ofstream accel4F("../data/accelerometer4.csv");
+	ofstream accel5F("../data/accelerometer5.csv");
+	ofstream accel6F("../data/accelerometer6.csv");
+	ofstream accel7F("../data/accelerometer7.csv");
+	ofstream accel8F("../data/accelerometer8.csv");
+	ofstream tempF("../data/temperature.csv");
+	ofstream salinityF("../data/salinity.csv")
+
 	SerialStream arduino("/dev/ttyACM0", ios_base::in);
     arduino.SetBaudRate(SerialStreamBuf::BAUD_9600);
     arduino.SetCharSize(SerialStreamBuf::CHAR_SIZE_8);
@@ -94,7 +105,6 @@ int main(void)
     arduino.SetParity(SerialStreamBuf::PARITY_NONE);
     arduino.SetFlowControl(SerialStreamBuf::FLOW_CONTROL_NONE);
 
-    ofstream outputFile("voltage.csv", ios_base::app);
     string line;
 	float tempData;
 	while (1)
@@ -107,24 +117,24 @@ int main(void)
 		if (arduino.IsDataAvailable())
         {
             getline(arduino, line);
-            outputFile << line << endl;
-            dataString += line;
+            salinityF << getCurrentTimestampMillisString() << line << endl;
         }
 		if (acc1Present) //Measure angle and magnetic intensity then add to string
 		{
 			if (!tempSampled)
 			{
 				tempData = calculateTemp(ch1);
-				dataString += to_string(tempData);
+				tempF << getCurrentTimestampMillisString() << to_string(tempData) << endl;
 				tempSampled = true;
 			}
 			calculateAverageAcc(ch1, ACC1);
+			accel1F << getCurrentTimestampMillisString() << ",";
 			for (int i = 0; i < 3; i++) // Add the XYZ data to the string
 			{
-				dataString += to_string(ACC1[i]);
-				dataString += ",";
+				accel1F << "," << to_string(ACC1[i]); 
 			}
-			statusString += "1A";
+			accel1F << endl;
+			
 		}
 
 		if (acc2Present)
@@ -136,13 +146,12 @@ int main(void)
 				tempSampled = true;
 			}
 			calculateAverageAcc(ch2, ACC2);
-
+			accel2F << getCurrentTimestampMillisString() << ",";
 			for (int i = 0; i < 3; i++) // Add the XYZ data to the string
 			{
-				dataString += to_string(ACC2[i]);
-				dataString += ",";
+				accel2F << "," << to_string(ACC2[i]); 
 			}
-			statusString += "2A";
+			accel2F << endl;
 		}
 
 		if (acc3Present)
@@ -155,12 +164,12 @@ int main(void)
 			}
 			calculateAverageAcc(ch3, ACC3);
 
+			accel3F << getCurrentTimestampMillisString() << ",";
 			for (int i = 0; i < 3; i++) // Add the XYZ data to the string
 			{
-				dataString += to_string(ACC3[i]);
-				dataString += ",";
+				accel3F << "," << to_string(ACC3[i]); 
 			}
-			statusString += "3A";
+			accel3F << endl;
 		}
 
 		if (acc4Present)
@@ -173,12 +182,12 @@ int main(void)
 			}
 			calculateAverageAcc(ch4, ACC4);
 
+			accel4F << getCurrentTimestampMillisString() << ",";
 			for (int i = 0; i < 3; i++) // Add the XYZ data to the string
 			{
-				dataString += to_string(ACC4[i]);
-				dataString += ",";
+				accel4F << "," << to_string(ACC4[i]); 
 			}
-			statusString += "4A";
+			accel4F << endl;
 		}
 		if (acc5Present)
 		{
@@ -190,12 +199,12 @@ int main(void)
 			}
 			calculateAverageAcc(ch5, ACC5);
 
+			accel5F << getCurrentTimestampMillisString() << ",";
 			for (int i = 0; i < 3; i++) // Add the XYZ data to the string
 			{
-				dataString += to_string(ACC5[i]);
-				dataString += ",";
+				accel5F << "," << to_string(ACC2[i]); 
 			}
-			statusString += "5A";
+			accel5F << endl;
 		}
 		if (acc6Present)
 		{
@@ -207,12 +216,12 @@ int main(void)
 			}
 			calculateAverageAcc(ch6, ACC6);
 
+			accel6F << getCurrentTimestampMillisString() << ",";
 			for (int i = 0; i < 3; i++) // Add the XYZ data to the string
 			{
-				dataString += to_string(ACC6[i]);
-				dataString += ",";
+				accel6F << "," << to_string(ACC6[i]); 
 			}
-			statusString += "6A";
+			accel6F << endl;
 		}
 		if (acc7Present)
 		{
@@ -224,12 +233,12 @@ int main(void)
 			}
 			calculateAverageAcc(ch7, ACC7);
 
+			accel7F << getCurrentTimestampMillisString() << ",";
 			for (int i = 0; i < 3; i++) // Add the XYZ data to the string
 			{
-				dataString += to_string(ACC7[i]);
-				dataString += ",";
+				accel7F << "," << to_string(ACC7[i]); 
 			}
-			statusString += "7A";
+			accel7F << endl;
 		}
 		if (acc8Present)
 		{
@@ -241,17 +250,25 @@ int main(void)
 			}
 			calculateAverageAcc(ch8, ACC8);
 
+			accel8F << getCurrentTimestampMillisString() << ",";
 			for (int i = 0; i < 3; i++) // Add the XYZ data to the string
 			{
-				dataString += to_string(ACC8[i]);
-				dataString += ",";
+				accel8F << "," << to_string(ACC8[i]); 
 			}
-			statusString += "8A";
+			accel8F << endl;
 		}
 		dataString = statusString + "," + dataString; //Combine the status info with the data
 		cout << dataString << endl;					  // Print the data out (or replace with method to save or graph the data)
 		sleep(10);
 	}
+	accel1F.close();
+	accel2F.close();
+	accel3F.close();
+	accel4F.close();
+	accel5F.close();
+	accel6F.close();
+	accel7F.close();
+	accel8F.close();
 }
 
 int I2C_write(int slave_address, uint8_t reg_address, uint8_t configData, int byteCount)
@@ -362,4 +379,12 @@ bool I2Ccheck(uint8_t ch, int16_t *acc)
 	//botCheck = botCheck & 0xff;
 	bool present = (check == 0x33) ? true : false;
 	return present;
+}
+
+string getCurrentTimestampMillisString()
+{
+    auto now = chrono::system_clock::now();
+    auto duration = now.time_since_epoch();
+    auto millis = chrono::duration_cast<chrono::milliseconds>(duration).count();
+    return to_string(millis);
 }
