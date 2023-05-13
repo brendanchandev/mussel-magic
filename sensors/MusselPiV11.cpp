@@ -108,14 +108,6 @@ int main(void)
 	{
 
 		bool tempSampled = false;
-		string dataString = "";	  // Create a string to write to Serial and the SD card
-		string statusString = ""; // Create a string to keep track of what was recorded
-		statusString += to_string(devID) + ",";
-		if (arduino.IsDataAvailable())
-        {
-            getline(arduino, line);
-            salinityF << getCurrentTimestampMillisString() << line << endl;
-        }
 		if (acc1Present) //Measure angle and magnetic intensity then add to string
 		{
 			if (!tempSampled)
@@ -205,7 +197,16 @@ int main(void)
 				tempSampled = true;
 			}
 			calculateAverageAcc(ch8, ACC8);
-            processAccelerometerData(ch8, ACC8, accel8F);
+            processAccelerom
+			eterData(ch8, ACC8, accel8F);
+		}
+		if (arduino.IsDataAvailable())
+		{
+			float voltage;
+			arduino >> voltage;
+			getline(arduino, line); // Read the remaining newline character
+			float salinity = tempSampled ? calculateSalinity(voltage, tempData) : calculateSalinity(voltage, 16.0);
+			salinityF << getCurrentTimestampMillisString() << salinity << endl;
 		}
 		sleep(10);
 	}
@@ -349,4 +350,15 @@ void processAccelerometerData(int ch, int16_t* acc, ofstream& file)
         file << "," << acc[i];
     }
     file << endl;
+}
+
+float calculateSalinity(float voltage, float temperature) {
+  // Temperature compensation formula: fFinalResult(25^C) = fFinalResult(current) / (1.0 + 0.02 * (fTP - 25.0))
+  float compensationCoefficient = 1.0 + 0.02 * (temperature - 25.0);
+  float compensationVoltage = voltage / compensationCoefficient;
+
+  // Convert voltage value to TDS value
+  float tdsValue = (133.42 * pow(compensationVoltage, 3) - 255.86 * pow(compensationVoltage, 2) + 857.39 * compensationVoltage) * 0.5;
+
+  return tdsValue;
 }
