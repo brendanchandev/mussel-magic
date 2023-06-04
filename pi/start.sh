@@ -1,9 +1,5 @@
 #!/bin/bash
 
-sudo apt-get update
-
-sudo apt-get install rpi.gpio
-
 # Name of your Python scripts
 PYTHON_SCRIPT_SERIAL="serial_data_to_csv.py"
 PYTHON_SCRIPT_VIDEO="record.py"
@@ -14,6 +10,8 @@ python3 -m venv venv
 
 # Activate the virtual environment
 source venv/bin/activate
+
+mkdir ../data
 
 # Install necessary Python packages
 pip install -r requirements.txt
