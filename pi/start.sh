@@ -1,5 +1,9 @@
 #!/bin/bash
 
+sudo apt-get update
+
+sudo apt-get install rpi.gpio
+
 # Name of your Python scripts
 PYTHON_SCRIPT_SERIAL="serial_data_to_csv.py"
 PYTHON_SCRIPT_VIDEO="record.py"

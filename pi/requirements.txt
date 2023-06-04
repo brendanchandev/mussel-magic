@@ -1,4 +1,3 @@
 pyserial
 pandas
 picamera
-RPi.GPIO
